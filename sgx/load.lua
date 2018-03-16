@@ -24,7 +24,7 @@ function _M.getloadavg()
 		return loadavg[0],loadavg[1],loadavg[2]
 	end
 end
-function _M.getcpu_time()
+function _M.getcpu_time_linux()
 	local cpufile = "/proc/stat"
 	local fd = ffi.C.open(cpufile,O_RDONLY or O_NONBLOCK)
 	if (fd == -1) then
@@ -50,5 +50,13 @@ function _M.getcpu_time()
 	end
 	return longtonum(user[0]),longtonum(nice[0]),longtonum(kernel[0]),
 				longtonum(idle[0]),longtonum(iowait[0])
+end
+
+function _M.getcpu_time()
+	if (ffi.os == "Linux") then
+		return _M.getcpu_time_linux()
+	else
+		return nil
+	end
 end
 return _M
